@@ -164,7 +164,7 @@ mains.configure(bg='grey')
 
 
 # Default image in editor
-img = Image.open("test.jpg")
+img = Image.open("initial.jpg")
 img = img.resize((600, 600))
 original_img = img
 
