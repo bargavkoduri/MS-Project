@@ -1,12 +1,7 @@
-#<------Image Editor Project using Python [Image Edito]------>
-
 # <------Importing necessary Modules------>
 from tkinter import *
-from tkinter import ttk
 from PIL import ImageTk, Image, ImageEnhance, ImageFilter
 from tkinter import filedialog
-import os
-
 
 # <------Custom Methods for editing------>
 
@@ -24,6 +19,9 @@ def brightness_callback(brightness_pos):
     global outputImage
     enhancer = ImageEnhance.Brightness(img)
     outputImage = enhancer.enhance(brightness_pos)
+    contrastSlider.set(1)
+    sharpnessSlider.set(1)
+    colorSlider.set(1)
     displayimage(outputImage)
 
 
@@ -34,6 +32,9 @@ def contrast_callback(contrast_pos):
     global outputImage
     enhancer = ImageEnhance.Contrast(img)
     outputImage = enhancer.enhance(contrast_pos)
+    brightnessSlider.set(1)
+    sharpnessSlider.set(1)
+    colorSlider.set(1)
     displayimage(outputImage)
 
 
@@ -44,6 +45,9 @@ def sharpen_callback(sharpness_pos):
     global outputImage
     enhancer = ImageEnhance.Sharpness(img)
     outputImage = enhancer.enhance(sharpness_pos)
+    brightnessSlider.set(1)
+    contrastSlider.set(1)
+    colorSlider.set(1)
     displayimage(outputImage)
 
 
@@ -54,6 +58,9 @@ def color_callback(Color_pos):
     global outputImage
     enhancer = ImageEnhance.Color(img)
     outputImage = enhancer.enhance(Color_pos)
+    brightnessSlider.set(1)
+    contrastSlider.set(1)
+    sharpnessSlider.set(1)
     displayimage(outputImage)
 
 
@@ -92,9 +99,20 @@ def edgeEnhance():
 
 # <------Resize image------>
 def resize():
-    global img
-    img = img.resize((200, 300))
-    displayimage(img)
+    ratio = selected_ratio.get()
+    ratios_dict = {
+        "16:9" : 1.777,
+        "4:3" : 1.333,
+        "3:4" : 0.75,
+        "1:1" : 1,
+        "3:2" : 1.5
+    }
+    if(ratio != "Default"):
+        global img
+        width = img.width
+        height = (int)(width/ratios_dict[ratio])
+        img = img.resize((width,height))
+        displayimage(img)
 
 
 # <------Crop images within specific window------>
@@ -105,16 +123,23 @@ def crop():
 
 # <------Reset Function------>
 def reset():
-    mains.destroy()
-    os.popen("main.py")
+    global img
+    img = original_img
+    brightnessSlider.set(1)
+    contrastSlider.set(1)
+    sharpnessSlider.set(1)
+    colorSlider.set(1)
+    selected_ratio.set("Default")
+    displayimage(img)
 
 # <------Open images from file explorer------>
 def ChangeImg():
-    global img
+    global img,original_img
     imgname = filedialog.askopenfilename(title="Change Image")
     if imgname:
         img = Image.open(imgname)
         img = img.resize((600, 600))
+        original_img = img
         displayimage(img)
 
 
@@ -140,8 +165,9 @@ mains.configure(bg='grey')
 
 
 # <------Default image in editor------>
-img = Image.open("GreenHills.jpg")
-img = img.resize((700, 600))
+img = Image.open("test.jpg")
+img = img.resize((600, 600))
+original_img = img
 
 # <------Creating panel to display image------>
 panel = Label(mains)
@@ -152,47 +178,35 @@ displayimage(img)
 # <------Necessary editing buttons and sliders------>
 
 # <------Brightness Slider button------>
-brightnessSlider = Scale(mains, label="Brightness", from_=0, to=2, orient=HORIZONTAL, length=200,
-                         resolution=0.1, command=brightness_callback, bg="PINK")
+brightnessSlider = Scale(mains, label="Brightness", from_=0, to=2, orient=HORIZONTAL, length=200,resolution=0.1, command=brightness_callback, bg="PINK")
 brightnessSlider.set(1)
 brightnessSlider.configure(font=('consolas',10,'bold'),foreground='black')
 brightnessSlider.place(x=1070,y=15)
-#brightnessSlider.grid(row=0, column=3)
-# brightnessSlider.pack()
 
 # <------Contrast Slider button------>
-contrastSlider = Scale(mains, label="Contrast", from_=0, to=2, orient=HORIZONTAL, length=200,
-                       command=contrast_callback, resolution=0.1, bg="light green")
+contrastSlider = Scale(mains, label="Contrast", from_=0, to=2, orient=HORIZONTAL, length=200,command=contrast_callback, resolution=0.1, bg="light green")
 contrastSlider.set(1)
 contrastSlider.configure(font=('consolas',10,'bold'),foreground='black')
 contrastSlider.place(x=1070,y=90)
-#contrastSlider.grid(row=1, column=3)
 
 # <------Sharpness Slider button------>
-sharpnessSlider = Scale(mains, label="Sharpness", from_=0, to=2, orient=HORIZONTAL, length=200,
-                        command=sharpen_callback, resolution=0.1, bg="light blue")
+sharpnessSlider = Scale(mains, label="Sharpness", from_=0, to=2, orient=HORIZONTAL, length=200,command=sharpen_callback, resolution=0.1, bg="light blue")
 sharpnessSlider.set(1)
 sharpnessSlider.configure(font=('consolas',10,'bold'),foreground='black')
 sharpnessSlider.place(x=1070,y=165)
-#sharpnessSlider.grid(row=2, column=3)
 
 # <------Color Slider button------>
-colorSlider = Scale(mains, label="Colors", from_=0, to=2, orient=HORIZONTAL, length=200,
-                    command=color_callback, resolution=0.1, bg="YELLOW")
+colorSlider = Scale(mains, label="Colors", from_=0, to=2, orient=HORIZONTAL, length=200,command=color_callback, resolution=0.1, bg="YELLOW")
 colorSlider.set(1)
 colorSlider.configure(font=('consolas',10,'bold'),foreground='black')
 colorSlider.place(x=1070,y=240)
-#colorSlider.grid(row=3, column=3)
-
 
 # <------Rotate button------>
 btnRotate = Button(mains, text='Rotate', width=25, command=rotate, bg="GREEN")
 btnRotate.configure(font=('consolas',10,'bold'),foreground='white')
 btnRotate.place(x=805,y=110)
-#btnRotate.grid(row=1, column=1)
 
 # <------Reset all button------
-
 reset_button=Button(mains,text="Reset",command=reset,bg="BLACK",activebackground="ORANGE")
 reset_button.configure(font=('consolas',10,'bold'),foreground='white')
 reset_button.place(x=380,y=15)
@@ -201,49 +215,43 @@ reset_button.place(x=380,y=15)
 btnChaImg = Button(mains, text='Change Image', width=25,command=ChangeImg,bg="RED",activebackground="ORANGE")
 btnChaImg.configure(font=('consolas',10,'bold'),foreground='white')
 btnChaImg.place(x=805,y=35)
-#btnChaImg.grid(row=0, column=1)
 
 # <------Flip button------>
 btnFlip = Button(mains, text='Flip', width=25, command=flip, bg="BLUE")
 btnFlip.configure(font=('consolas',10,'bold'),foreground='white')
 btnFlip.place(x=805,y=180)
-#btnFlip.grid(row=2, column=1)
 
 # <------Resize button------>
+#btnResize.grid(row=3, column=1)
+
+aspect_ratios = ["Default","16:9","4:3","3:4","3:2","1:1"]
+selected_ratio = StringVar(mains)
+selected_ratio.set(aspect_ratios[0])
+dropdown = OptionMenu(mains,selected_ratio,*aspect_ratios)
+dropdown.place(x=805,y=285)
 btnResize = Button(mains, text='Resize', width=25, command=resize, bg="YELLOW")
 btnResize.configure(font=('consolas',10,'bold'),foreground='black')
 btnResize.place(x=805,y=255)
-#btnResize.grid(row=3, column=1)
-
-# <------Crop button------>
-btnCrop = Button(mains, text='Crop', width=25, command=crop, bg="VIOLET")
-btnCrop.configure(font=('consolas',10,'bold'),foreground='black')
-btnCrop.place(x=805,y=340)
-#btnCrop.grid(row=4, column=1)
 
 # <------Blur effect button------>
 btnBlur = Button(mains, text='Blur', width=25, command=blurr, bg="ORANGE")
 btnBlur.configure(font=('consolas',10,'bold'),foreground='black')
-btnBlur.place(x=805,y=425)
-#btnBlur.grid(row=5, column=1)
+btnBlur.place(x=805,y=350)
 
 # <------Emboss effect button------>
 btnEmboss = Button(mains, text='Emboss', width=25, command=emboss, bg="light green")
 btnEmboss.configure(font=('consolas',10,'bold'),foreground='black')
-btnEmboss.place(x=805,y=510)
-#btnEmboss.grid(row=6, column=1)
+btnEmboss.place(x=805,y=420)
 
 # <------Edge enhance effect button------>
 btnEdgeEnhance = Button(mains, text='EdgeEnhance', width=25, command=edgeEnhance, bg="light blue")
 btnEdgeEnhance.configure(font=('consolas',10,'bold'),foreground='black')
-btnEdgeEnhance.place(x=805,y=595)
-#btnEdgeEnhance.grid(row=7, column=1)
+btnEdgeEnhance.place(x=805,y=490)
 
 # <------Save button------>
 btnSave = Button(mains, text='Save', width=25, command=save, bg="BROWN")
 btnSave.configure(font=('consolas',10,'bold'),foreground='white')
-btnSave.place(x=805,y=675)
-#btnSave.grid(row=8, column=1)
+btnSave.place(x=805,y=560)
 
 btnClose = Button(mains, text='Close', command=close, bg="BLACK",activebackground="ORANGE")
 btnClose.configure(font=('consolas',10,'bold'),foreground='white')
