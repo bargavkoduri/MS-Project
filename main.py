@@ -127,22 +127,30 @@ def reset():
 
 # Open images from file explorer
 def ChangeImg():
-    global img,original_img,original_width,original_height
+    global img,original_img,original_width,original_height,outputImage
     imgname = filedialog.askopenfilename(title="Change Image")
     if imgname:
         img = Image.open(imgname)
         original_width = img.width
         original_height = img.height
         img = img.resize((600, 600))
+        outputImage = img
+        brightnessSlider.set(1)
+        contrastSlider.set(1)
+        sharpnessSlider.set(1)
+        colorSlider.set(1)
         original_img = img
         displayimage(img)
 
 
 # Save edited images
 def save():
-    global img
+    global outputImage
     savefile = filedialog.asksaveasfile(defaultextension=".jpg")
-    temp_img = img
+    if(outputImage):
+        temp_img = outputImage
+    else:
+        temp_img = img
     ratio = selected_ratio.get()
     ratios_dict = {
         "16:9": 1.777,
