@@ -66,35 +66,40 @@ def color_callback(Color_pos):
 
 # Rotate
 def rotate():
-    global img
+    global img,outputImage
     img = img.rotate(90)
+    outputImage = img
     displayimage(img)
 
 
 # Flip image
 def flip():
-    global img
+    global img,outputImage
     img = img.transpose((Image.FLIP_LEFT_RIGHT))
+    outputImage = img
     displayimage(img)
 
 
 # Blur effect on images
 def blurr():
-    global img
+    global img,outputImage
     img = img.filter(ImageFilter.BLUR)
+    outputImage = img
     displayimage(img)
 
 
 # Emboss effect on images
 def emboss():
-    global img
+    global img,outputImage
     img = img.filter(ImageFilter.EMBOSS)
+    outputImage = img
     displayimage(img)
 
 # Edge enhance effect on images
 def edgeEnhance():
-    global img
+    global img,outputImage
     img = img.filter(ImageFilter.FIND_EDGES)
+    outputImage = img
     displayimage(img)
 
 # Resize image
@@ -108,7 +113,7 @@ def resize():
         "3:2" : 1.5
     }
     if(ratio != "Default"):
-        global img
+        global img,outputImage
         width = img.width
         height = (int)(width/ratios_dict[ratio])
         img = img.resize((width,height))
@@ -116,8 +121,9 @@ def resize():
 
 # Reset Function
 def reset():
-    global img
+    global img,outputImage
     img = original_img
+    outputImage = img
     brightnessSlider.set(1)
     contrastSlider.set(1)
     sharpnessSlider.set(1)
