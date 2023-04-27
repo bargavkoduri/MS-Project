@@ -147,10 +147,7 @@ def ChangeImg():
 def save():
     global outputImage
     savefile = filedialog.asksaveasfile(defaultextension=".jpg")
-    if(outputImage):
-        temp_img = outputImage
-    else:
-        temp_img = img
+    temp_img = outputImage
     ratio = selected_ratio.get()
     ratios_dict = {
         "16:9": 1.777,
