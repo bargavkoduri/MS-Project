@@ -114,13 +114,6 @@ def resize():
         img = img.resize((width,height))
         displayimage(img)
 
-
-# Crop images within specific window
-def crop():
-    global img
-    img = img.crop((100, 100, 400, 400))
-    displayimage(img)
-
 # Reset Function
 def reset():
     global img
@@ -134,10 +127,12 @@ def reset():
 
 # Open images from file explorer
 def ChangeImg():
-    global img,original_img
+    global img,original_img,original_width,original_height
     imgname = filedialog.askopenfilename(title="Change Image")
     if imgname:
         img = Image.open(imgname)
+        original_width = img.width
+        original_height = img.height
         img = img.resize((600, 600))
         original_img = img
         displayimage(img)
@@ -147,7 +142,25 @@ def ChangeImg():
 def save():
     global img
     savefile = filedialog.asksaveasfile(defaultextension=".jpg")
-    outputImage.save(savefile)
+    temp_img = img
+    ratio = selected_ratio.get()
+    ratios_dict = {
+        "16:9": 1.777,
+        "4:3": 1.333,
+        "3:4": 0.75,
+        "1:1": 1,
+        "3:2": 1.5
+    }
+    new_width = original_width
+    new_height = original_height
+    if (ratio != "Default"):
+        if ratios_dict[ratio] > original_width/original_height:
+            new_width = int(original_height*ratios_dict[ratio])
+        else:
+            print("lesser")
+            new_height = int(img.width/ratios_dict[ratio])
+    temp_img = temp_img.resize((new_width,new_height))
+    temp_img.save(savefile)
 
 def close():
     mains.destroy()
@@ -165,6 +178,8 @@ mains.configure(bg='grey')
 
 # Default image in editor
 img = Image.open("initial.jpg")
+original_width = img.width
+original_height = img.height
 img = img.resize((600, 600))
 original_img = img
 
